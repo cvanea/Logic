@@ -27,3 +27,15 @@ class Formula(object):
 
     def convert_ors_by_demorgans_law(self):
         return self.conversion_by_law(Or, Or.demorgans_law_or)
+
+    def convert_and_by_demorgans_law(self):
+        return self.conversion_by_law(And, And.demorgan_law_and)
+
+    def convert_not_by_double_negation(self):
+        return self.conversion_by_law(Not, Not.double_negation)
+
+    def convert_conditional_by_disjunction(self):
+        return self.conversion_by_law(Conditional, Conditional.disjunction_convert)
+
+    def convert_biconditional_by_conditional(self):
+        return self.conversion_by_law(BiConditional, BiConditional.conditional_convert)

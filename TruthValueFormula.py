@@ -20,6 +20,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-Not(And(Not(a), Not(b)))
