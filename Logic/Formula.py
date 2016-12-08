@@ -8,6 +8,9 @@ class Formula(object):
     def __init__(self, formula):
         self.formula = formula
 
+    def __str__(self):
+        return str(self.formula)
+
     @property
     def truth_value(self):
         return self.formula.truth_value

@@ -9,6 +9,18 @@ class Expression(object):
     def __init__(self, *scope):
         self.scope = scope
 
+    def __str__(self, level=0):
+        string = self.__class__.__name__ + "("
+        l = len(self.scope) - 1
+        for i, s in enumerate(self.scope):
+            if i == l:
+                string += str(s)
+            else:
+                string += str(s) + ", "
+        string += ")"
+
+        return string
+
     @abstractmethod
     def truth_value(self):
         pass
@@ -52,9 +64,11 @@ class Not(UnaryExpression):
 
     def double_negation(self):
         if isinstance(self.a, Not):
-            return self.a.a
+            x = self.a
+            if isinstance(x.a, Not):
+                return x.a
         else:
-            return self
+            pass
 
 
 class Or(BinaryExpression):
