@@ -6,6 +6,7 @@ from abc import abstractmethod
 
 
 class Expression(object):
+
     def __init__(self, *scope):
         self.scope = scope
 
@@ -62,13 +63,18 @@ class Not(UnaryExpression):
     def truth_value(self):
         return not self.is_true(self.a)
 
+    @property
+    def can_be_double_negated(self):
+        if isinstance(self.a, Not):
+            return True
+        else:
+            return False
+
     def double_negation(self):
         if isinstance(self.a, Not):
-            x = self.a
-            if isinstance(x.a, Not):
-                return x.a
+            return self.a.a
         else:
-            pass
+            return self  # going to need to deal with this
 
 
 class Or(BinaryExpression):
