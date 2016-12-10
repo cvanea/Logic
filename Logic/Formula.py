@@ -17,7 +17,10 @@ class Formula(object):
 
     @property
     def truth_value(self):
-        return self.formula.truth_value
+        try:
+            return self.formula.truth_value
+        except AttributeError:
+            return self.formula
 
     def conversion_by_law(self, t, m):
         def f(x):
