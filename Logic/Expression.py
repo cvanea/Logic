@@ -1,5 +1,5 @@
 """
-Basic Classes for Expressions.
+Basic Classes for Expressions. Contains all Propositional Logic connectives.
 """
 
 from abc import abstractmethod
@@ -8,6 +8,10 @@ from abc import abstractmethod
 class Expression(object):
 
     def __init__(self, *scope):
+        """Init scope of any size.
+
+        :param scope: Scope of Connective
+        """
         self.scope = scope
 
     def __str__(self, level=0):
@@ -28,6 +32,11 @@ class Expression(object):
 
     @staticmethod
     def is_true(exp):
+        """Check truth value.
+
+        :param exp: Expression
+        :return: Truth Value
+        """
         try:
             return exp.truth_value
         except AttributeError:
@@ -36,6 +45,10 @@ class Expression(object):
 
 class UnaryExpression(Expression):
     def __init__(self, a):
+        """Init connectives with one scope.
+
+        :param a: Scope
+        """
         super().__init__(a)
         self.a = self.scope[0]
 
@@ -46,6 +59,11 @@ class UnaryExpression(Expression):
 
 class BinaryExpression(Expression):
     def __init__(self, a, b):
+        """Init connectives with two scopes.
+
+        :param a: Left most scope
+        :param b: Right most scope
+        """
         super().__init__(a, b)
         self.a = self.scope[0]
         self.b = self.scope[1]
@@ -57,77 +75,139 @@ class BinaryExpression(Expression):
 
 class Not(UnaryExpression):
     def __init__(self, a):
+        """Init negation connective object.
+
+        :param a: Scope
+        """
         super().__init__(a)
 
     @property
     def truth_value(self):
+        """Return truth value of a negated formula.
+
+        :return: Truth value
+        """
         return not self.is_true(self.a)
 
     @property
     def can_be_double_negated(self):
+        """Check for instance of double negation, e.g. Not(Not(a)).
+
+        :return: Truth condition
+        """
         if isinstance(self.a, Not):
             return True
         else:
             return False
 
     def double_negation(self):
+        """Remove double negation.
+
+        :return: Scope of scope
+        """
         if isinstance(self.a, Not):
             return self.a.a
-        else:
-            return self  # going to need to deal with this
 
 
 class Or(BinaryExpression):
     def __init__(self, a, b):
+        """Init disjunction connective.
+
+        :param a: Left most scope
+        :param b: Right most scope
+        """
         super().__init__(a, b)
 
     @property
     def truth_value(self):
+        """Return truth value of a disjunctive formula.
+
+        :return: Truth value
+        """
         if not self.is_true(self.a) and not self.is_true(self.b):
             return False
         else:
             return True
 
     def demorgans_law_or(self):
+        """Apply DeMorgan's Law to a disjunction.
+
+        :return: Formula
+        """
         return Not(And(Not(self.a), Not(self.b)))
 
 
 class And(BinaryExpression):
     def __init__(self, a, b):
+        """Init conjunction connective.
+
+        :param a: Left most scope
+        :param b: Right most scope
+        """
         super().__init__(a, b)
 
     @property
     def truth_value(self):
+        """Return truth value of a conjunctive formula.
+
+        :return: Truth value
+        """
         if self.is_true(self.a) and self.is_true(self.b):
             return True
         else:
             return False
 
     def demorgan_law_and(self):
+        """Apply DeMorgan's Law to a conjunction.
+
+        :return: Formula
+        """
         return Not(Or(Not(self.a), Not(self.b)))
 
 
 class Conditional(BinaryExpression):
     def __init__(self, a, b):
+        """Init conditional connective.
+
+        :param a: Antecedent scope
+        :param b: Consequent scope
+        """
         super().__init__(a, b)
 
     @property
     def truth_value(self):
+        """Return truth value of a conditional formula.
+
+        :return: Truth value
+        """
         if not self.is_true(self.a) or self.is_true(self.b):
             return True
         else:
             return False
 
     def disjunction_convert(self):
+        """Apply disjunction conversion to conditional.
+
+        :return: Formula
+        """
         return Or(Not(self.a), self.b)
 
 
 class BiConditional(BinaryExpression):
     def __init__(self, a, b):
+        """Init bi-conditional connective.
+
+        :param a: Left most scope
+        :param b: Right most scope
+        """
         super().__init__(a, b)
 
     @property
     def truth_value(self):
+        """Return truth value of a bi-conditional formula.
+
+        :return: Truth value
+        """
         if (self.is_true(self.a) and self.is_true(self.b)) or (
                 not (self.is_true(self.a) or self.is_true(self.b))):
             return True
@@ -135,4 +215,8 @@ class BiConditional(BinaryExpression):
             return False
 
     def conditional_convert(self):
+        """Apply conversion to conditionals.
+
+        :return: Formula
+        """
         return And(Conditional(self.a, self.b), Conditional(self.b, self.a))
