@@ -10,18 +10,22 @@ class Expression(object):
     def __init__(self, *scope):
         """Init scope of any size.
 
-        :param scope: Scope of Connective
+        :param scope: Expression - Scope of Connective
         """
         self.scope = scope
 
-    def __str__(self, level=0):
+    def __str__(self):
+        """Return printable expression as a string.
+
+        :return: String
+        """
         string = self.__class__.__name__ + "("
         l = len(self.scope) - 1
         for i, s in enumerate(self.scope):
-            if i == l:
-                string += str(s)
-            else:
+            if i < l:
                 string += str(s) + ", "
+            else:
+                string += str(s)
         string += ")"
 
         return string
@@ -31,11 +35,11 @@ class Expression(object):
         pass
 
     @staticmethod
-    def is_true(exp):
+    def _is_true(exp):
         """Check truth value.
 
         :param exp: Expression
-        :return: Truth Value
+        :return: Bool
         """
         try:
             return exp.truth_value
@@ -61,8 +65,8 @@ class BinaryExpression(Expression):
     def __init__(self, a, b):
         """Init connectives with two scopes.
 
-        :param a: Left most scope
-        :param b: Right most scope
+        :param a: Expression - Left most scope
+        :param b: Expression - Right most scope
         """
         super().__init__(a, b)
         self.a = self.scope[0]
@@ -77,7 +81,7 @@ class Not(UnaryExpression):
     def __init__(self, a):
         """Init negation connective object.
 
-        :param a: Scope
+        :param a: Expression - Scope
         """
         super().__init__(a)
 
@@ -85,15 +89,15 @@ class Not(UnaryExpression):
     def truth_value(self):
         """Return truth value of a negated formula.
 
-        :return: Truth value
+        :return: Bool
         """
-        return not self.is_true(self.a)
+        return not self._is_true(self.a)
 
     @property
     def can_be_double_negated(self):
         """Check for instance of double negation, e.g. Not(Not(a)).
 
-        :return: Truth condition
+        :return: Bool
         """
         if isinstance(self.a, Not):
             return True
@@ -103,7 +107,7 @@ class Not(UnaryExpression):
     def double_negation(self):
         """Remove double negation.
 
-        :return: Scope of scope
+        :return: Expression - Scope of scope
         """
         if isinstance(self.a, Not):
             return self.a.a
@@ -124,7 +128,7 @@ class Or(BinaryExpression):
 
         :return: Truth value
         """
-        if not self.is_true(self.a) and not self.is_true(self.b):
+        if not self._is_true(self.a) and not self._is_true(self.b):
             return False
         else:
             return True
@@ -152,7 +156,7 @@ class And(BinaryExpression):
 
         :return: Truth value
         """
-        if self.is_true(self.a) and self.is_true(self.b):
+        if self._is_true(self.a) and self._is_true(self.b):
             return True
         else:
             return False
@@ -180,7 +184,7 @@ class Conditional(BinaryExpression):
 
         :return: Truth value
         """
-        if not self.is_true(self.a) or self.is_true(self.b):
+        if not self._is_true(self.a) or self._is_true(self.b):
             return True
         else:
             return False
@@ -208,8 +212,8 @@ class BiConditional(BinaryExpression):
 
         :return: Truth value
         """
-        if (self.is_true(self.a) and self.is_true(self.b)) or (
-                not (self.is_true(self.a) or self.is_true(self.b))):
+        if (self._is_true(self.a) and self._is_true(self.b)) or (
+                not (self._is_true(self.a) or self._is_true(self.b))):
             return True
         else:
             return False

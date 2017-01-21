@@ -58,3 +58,15 @@ class Formula(object):
                 return x
 
         return Formula(f(self.formula))
+
+    def variable_number(self):
+
+        variables = []
+
+        def f(x):
+            if isinstance(x, Expression):
+                return x.__class__(*(f(s) for s in x.scope))
+            elif isinstance(x, bool):
+                variables.append(str(x))
+
+        return variables

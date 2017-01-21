@@ -32,5 +32,6 @@ def main():
     print(f3)
     print(f3 == some_triple_not)
 
+
 if __name__ == "__main__":
     main()
