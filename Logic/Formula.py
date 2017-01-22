@@ -6,21 +6,29 @@ from Logic.Expression import *
 
 class Formula(object):
 
-    def __init__(self, formula):
-        self.formula = formula
+    def __init__(self, expression):
+        self.expression = expression
 
     def __str__(self):
-        return str(self.formula)
+        return str(self.expression)
 
-    def __eq__(self, other):
-        return self.truth_value == other.truth_value
+    def __bool__(self):
+        return bool(self.expression)
 
-    @property
+    def __eq__(self, other, method='tvalue'):
+        """Compare truth values by default.
+        Set method to structure to compare the structure of two expression trees.
+        :param other:
+        :param method:
+        :return:
+        """
+        if method == 'tvalue':
+            return bool(self) == bool(other)
+        elif method == 'structure':
+            return self.__dict__ == other.__dict__
+
     def truth_value(self):
-        try:
-            return self.formula.truth_value
-        except AttributeError:
-            return self.formula
+        return bool(self)
 
     def conversion_by_law(self, t, m):
         def f(x):
@@ -31,7 +39,7 @@ class Formula(object):
             else:
                 return x
 
-        return Formula(f(self.formula))
+        return Formula(f(self.expression))
 
     def convert_ors_by_demorgans_law(self):
         return self.conversion_by_law(Or, Or.demorgans_law_or)
@@ -57,16 +65,4 @@ class Formula(object):
             else:
                 return x
 
-        return Formula(f(self.formula))
-
-    def variable_number(self):
-
-        variables = []
-
-        def f(x):
-            if isinstance(x, Expression):
-                return x.__class__(*(f(s) for s in x.scope))
-            elif isinstance(x, bool):
-                variables.append(str(x))
-
-        return variables
+        return Formula(f(self.expression))

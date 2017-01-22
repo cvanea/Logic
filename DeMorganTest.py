@@ -1,36 +1,33 @@
-from Logic.Expression import Not, And, Or, Conditional, BiConditional
-from Logic.Formula import Formula
+from Logic import Not, And, Or, Conditional, BiConditional
+from Logic import Formula
+from Logic import Variable
 
 
 def main():
 
-    a = True
-    # b = False
+    a = Variable("a")
+    b = Variable("b")
 
-    # some_or = Formula(Or(Or(Or(a, b), a), b))
+    a.tvalue = True
+    b.tvalue = False
 
-    some_not = Formula(Not(a))
-    some_double_not = Formula(Not(Not(a)))
-    some_triple_not = Formula(Not(Not(Not(a))))
+    some_or = Formula(Or(Or(a, Or(a, b)), b))
 
-    # f1 = some_or.convert_ors_by_demorgans_law()
-    f2 = some_double_not.convert_not_by_double_negation()
-    f3 = some_triple_not.convert_not_by_double_negation()
+    x = some_or.convert_ors_by_demorgans_law()
+    y = x.convert_not_by_double_negation()
+    print(x)
+    print(y)
+    print(x.expression.__eq__(y.expression, method='tvalue'))
+    print(x == y)
+
+
+    # print(some_or)
+    # print(some_not)
     #
-    # # print(some_or)
-    # # print(f1)
+    # print(some_or.truth_value())
+    # print(some_not.truth_value())
     #
-    print(some_not)
-    print(some_not.truth_value)
-
-    print(some_double_not)
-    print(some_double_not.truth_value)
-    print(f2)
-
-    print(some_triple_not)
-    print(some_triple_not.truth_value)
-    print(f3)
-    print(f3 == some_triple_not)
+    print(Not(a).double_negation())
 
 
 if __name__ == "__main__":

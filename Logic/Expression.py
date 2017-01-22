@@ -13,6 +13,7 @@ class Expression(object):
         :param scope: Expression - Scope of Connective
         """
         self.scope = scope
+        self.variables = {}
 
     def __str__(self):
         """Return printable expression as a string.
@@ -31,23 +32,12 @@ class Expression(object):
         return string
 
     @abstractmethod
-    def truth_value(self):
+    def __bool__(self):
         pass
-
-    @staticmethod
-    def _is_true(exp):
-        """Check truth value.
-
-        :param exp: Expression
-        :return: Bool
-        """
-        try:
-            return exp.truth_value
-        except AttributeError:
-            return exp
 
 
 class UnaryExpression(Expression):
+
     def __init__(self, a):
         """Init connectives with one scope.
 
@@ -57,11 +47,12 @@ class UnaryExpression(Expression):
         self.a = self.scope[0]
 
     @abstractmethod
-    def truth_value(self):
+    def __bool__(self):
         pass
 
 
 class BinaryExpression(Expression):
+
     def __init__(self, a, b):
         """Init connectives with two scopes.
 
@@ -73,11 +64,12 @@ class BinaryExpression(Expression):
         self.b = self.scope[1]
 
     @abstractmethod
-    def truth_value(self):
+    def __bool__(self):
         pass
 
 
 class Not(UnaryExpression):
+
     def __init__(self, a):
         """Init negation connective object.
 
@@ -85,13 +77,8 @@ class Not(UnaryExpression):
         """
         super().__init__(a)
 
-    @property
-    def truth_value(self):
-        """Return truth value of a negated formula.
-
-        :return: Bool
-        """
-        return not self._is_true(self.a)
+    def __bool__(self):
+        return not self.a
 
     @property
     def can_be_double_negated(self):
@@ -111,9 +98,12 @@ class Not(UnaryExpression):
         """
         if isinstance(self.a, Not):
             return self.a.a
+        else:
+            return self
 
 
 class Or(BinaryExpression):
+
     def __init__(self, a, b):
         """Init disjunction connective.
 
@@ -122,16 +112,8 @@ class Or(BinaryExpression):
         """
         super().__init__(a, b)
 
-    @property
-    def truth_value(self):
-        """Return truth value of a disjunctive formula.
-
-        :return: Truth value
-        """
-        if not self._is_true(self.a) and not self._is_true(self.b):
-            return False
-        else:
-            return True
+    def __bool__(self):
+        return False if not self.a and not self.b else True
 
     def demorgans_law_or(self):
         """Apply DeMorgan's Law to a disjunction.
@@ -142,6 +124,7 @@ class Or(BinaryExpression):
 
 
 class And(BinaryExpression):
+
     def __init__(self, a, b):
         """Init conjunction connective.
 
@@ -150,16 +133,8 @@ class And(BinaryExpression):
         """
         super().__init__(a, b)
 
-    @property
-    def truth_value(self):
-        """Return truth value of a conjunctive formula.
-
-        :return: Truth value
-        """
-        if self._is_true(self.a) and self._is_true(self.b):
-            return True
-        else:
-            return False
+    def __bool__(self):
+        return True if self.a and self.b else False
 
     def demorgan_law_and(self):
         """Apply DeMorgan's Law to a conjunction.
@@ -170,6 +145,7 @@ class And(BinaryExpression):
 
 
 class Conditional(BinaryExpression):
+
     def __init__(self, a, b):
         """Init conditional connective.
 
@@ -178,16 +154,8 @@ class Conditional(BinaryExpression):
         """
         super().__init__(a, b)
 
-    @property
-    def truth_value(self):
-        """Return truth value of a conditional formula.
-
-        :return: Truth value
-        """
-        if not self._is_true(self.a) or self._is_true(self.b):
-            return True
-        else:
-            return False
+    def __bool__(self):
+        return True if not self.a or self.b else False
 
     def disjunction_convert(self):
         """Apply disjunction conversion to conditional.
@@ -198,6 +166,7 @@ class Conditional(BinaryExpression):
 
 
 class BiConditional(BinaryExpression):
+
     def __init__(self, a, b):
         """Init bi-conditional connective.
 
@@ -206,17 +175,8 @@ class BiConditional(BinaryExpression):
         """
         super().__init__(a, b)
 
-    @property
-    def truth_value(self):
-        """Return truth value of a bi-conditional formula.
-
-        :return: Truth value
-        """
-        if (self._is_true(self.a) and self._is_true(self.b)) or (
-                not (self._is_true(self.a) or self._is_true(self.b))):
-            return True
-        else:
-            return False
+    def __bool__(self):
+        return True if (self.a and self.b) or not (self.a or self.b) else False
 
     def conditional_convert(self):
         """Apply conversion to conditionals.
