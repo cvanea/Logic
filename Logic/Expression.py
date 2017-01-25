@@ -10,10 +10,9 @@ class Expression(object):
     def __init__(self, *scope):
         """Init scope of any size.
 
-        :param scope: Expression - Scope of Connective
+        :param scope: Expression / Variable
         """
         self.scope = scope
-        self.variables = {}
 
     def __str__(self):
         """Return printable expression as a string.
@@ -41,7 +40,7 @@ class UnaryExpression(Expression):
     def __init__(self, a):
         """Init connectives with one scope.
 
-        :param a: Scope
+        :param a: Expression / Variable
         """
         super().__init__(a)
         self.a = self.scope[0]
@@ -56,8 +55,8 @@ class BinaryExpression(Expression):
     def __init__(self, a, b):
         """Init connectives with two scopes.
 
-        :param a: Expression - Left most scope
-        :param b: Expression - Right most scope
+        :param a: Expression / Variable
+        :param b: Expression / Variable
         """
         super().__init__(a, b)
         self.a = self.scope[0]
@@ -73,11 +72,15 @@ class Not(UnaryExpression):
     def __init__(self, a):
         """Init negation connective object.
 
-        :param a: Expression - Scope
+        :param a: Expression / Variable
         """
         super().__init__(a)
 
     def __bool__(self):
+        """Define truth value.
+
+        :return: Bool
+        """
         return not self.a
 
     @property
@@ -94,7 +97,7 @@ class Not(UnaryExpression):
     def double_negation(self):
         """Remove double negation.
 
-        :return: Expression - Scope of scope
+        :return: Expression / Variable
         """
         if isinstance(self.a, Not):
             return self.a.a
@@ -105,20 +108,24 @@ class Not(UnaryExpression):
 class Or(BinaryExpression):
 
     def __init__(self, a, b):
-        """Init disjunction connective.
+        """Init disjunction connective object.
 
-        :param a: Left most scope
-        :param b: Right most scope
+        :param a: Expression / Variable
+        :param b: Expression / Variable
         """
         super().__init__(a, b)
 
     def __bool__(self):
+        """Define truth value.
+
+        :return: bool
+        """
         return False if not self.a and not self.b else True
 
     def demorgans_law_or(self):
         """Apply DeMorgan's Law to a disjunction.
 
-        :return: Formula
+        :return: Expression
         """
         return Not(And(Not(self.a), Not(self.b)))
 
@@ -128,18 +135,22 @@ class And(BinaryExpression):
     def __init__(self, a, b):
         """Init conjunction connective.
 
-        :param a: Left most scope
-        :param b: Right most scope
+        :param a: Expression / Variable
+        :param b: Expression / Variable
         """
         super().__init__(a, b)
 
     def __bool__(self):
+        """Define truth value.
+
+        :return: Bool
+        """
         return True if self.a and self.b else False
 
     def demorgan_law_and(self):
         """Apply DeMorgan's Law to a conjunction.
 
-        :return: Formula
+        :return: Expression
         """
         return Not(Or(Not(self.a), Not(self.b)))
 
@@ -149,8 +160,8 @@ class Conditional(BinaryExpression):
     def __init__(self, a, b):
         """Init conditional connective.
 
-        :param a: Antecedent scope
-        :param b: Consequent scope
+        :param a: Expression / Variable
+        :param b: Expression / Variable
         """
         super().__init__(a, b)
 
@@ -160,7 +171,7 @@ class Conditional(BinaryExpression):
     def disjunction_convert(self):
         """Apply disjunction conversion to conditional.
 
-        :return: Formula
+        :return: Expression
         """
         return Or(Not(self.a), self.b)
 
@@ -170,8 +181,8 @@ class BiConditional(BinaryExpression):
     def __init__(self, a, b):
         """Init bi-conditional connective.
 
-        :param a: Left most scope
-        :param b: Right most scope
+        :param a: Expression / Variable
+        :param b: Expression / Variable
         """
         super().__init__(a, b)
 
@@ -181,6 +192,6 @@ class BiConditional(BinaryExpression):
     def conditional_convert(self):
         """Apply conversion to conditionals.
 
-        :return: Formula
+        :return: Expression
         """
         return And(Conditional(self.a, self.b), Conditional(self.b, self.a))

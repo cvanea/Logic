@@ -17,9 +17,8 @@ def main():
     y = x.convert_not_by_double_negation()
     print(x)
     print(y)
-    print(x.expression.__eq__(y.expression, method='tvalue'))
     print(x == y)
-
+    print(x.truth_value())
 
     # print(some_or)
     # print(some_not)
@@ -27,7 +26,7 @@ def main():
     # print(some_or.truth_value())
     # print(some_not.truth_value())
     #
-    print(Not(a).double_negation())
+    # print(Not(a).double_negation())
 
 
 if __name__ == "__main__":
