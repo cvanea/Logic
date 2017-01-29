@@ -5,17 +5,19 @@ from itertools import product as cartesian_product
 
 from Logic.Formula import Formula
 from Logic.Expression import Not
+from Logic.Variable import Variable
 
 
 class TruthTable(object):
 
     def __init__(self, *formulas):
         self.formulas = formulas
-        self._n = 2
+        self.variables = {}
+        for f in self.formulas:
+            self.variables.update(f.variables)
+        self._n = len(self.variables)
 
-    def number_of_variables(self, variables):
-        _n = len(variables)
-        return _n
+
 
     def __str__(self):
         paddings = []
@@ -27,9 +29,13 @@ class TruthTable(object):
 
 
 def main():
-    a = Formula(Not(Not(True)))
-    b = Formula(Not(Not(Not(False))))
-    x = TruthTable(a, b, a)
+
+    a = Variable("a")
+    b = Variable("b")
+
+    f1 = Formula(Not(Not(a)))
+    f2 = Formula(Not(Not(Not(b))))
+    x = TruthTable(f1, f2)
     print(x._truth_values)
 
 if __name__ == '__main__':

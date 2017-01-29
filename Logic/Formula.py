@@ -12,6 +12,7 @@ class Formula(object):
         :param expression: Expression
         """
         self.expression = expression
+        self.variables = {}  # Key will be string, value will be object.
 
     def __str__(self):
         """Call __str__ of expression.
@@ -46,6 +47,14 @@ class Formula(object):
         :return: Bool
         """
         return bool(self)
+
+    @property
+    def variable(self):
+        return self.variable
+
+    @variable.setter
+    def variable(self, **variables):
+        self.variables = variables
 
     def conversion_by_law(self, t, m):
         """Recursively call respective conversion law on outer most expression.

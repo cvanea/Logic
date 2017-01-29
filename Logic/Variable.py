@@ -39,6 +39,6 @@ class Variable(object):
     def tvalue(self, tvalue):
         """Setter for truth value of variable object.
 
-        :param tvalue: bool
+        :param tvalue: Bool
         """
         self._tvalue = tvalue

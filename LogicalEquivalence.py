@@ -2,7 +2,7 @@ from functools import reduce
 from Logic.Expression import Not, And, Or, Conditional, BiConditional
 from Logic.Formula import Formula
 
-
+#
 # def cartesian_product(n):
 #     X = [(True, False) for i in range(n)]
 #     return reduce(lambda acc, _X: [tup + (x,) for tup in acc for x in _X], X, [()])
